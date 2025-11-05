@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36623.8
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TranscribeMeeting", "TranscribeMeeting\TranscribeMeeting.csproj", "{E090D406-4720-4ABC-B292-85BAFA6DA321}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TranscribeMeetingUI", "TranscribeMeetingUI\TranscribeMeetingUI.csproj", "{A80FE4AE-E4AE-4A9F-B547-63706A45ED32}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E090D406-4720-4ABC-B292-85BAFA6DA321}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E090D406-4720-4ABC-B292-85BAFA6DA321}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E090D406-4720-4ABC-B292-85BAFA6DA321}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E090D406-4720-4ABC-B292-85BAFA6DA321}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A80FE4AE-E4AE-4A9F-B547-63706A45ED32}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A80FE4AE-E4AE-4A9F-B547-63706A45ED32}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A80FE4AE-E4AE-4A9F-B547-63706A45ED32}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A80FE4AE-E4AE-4A9F-B547-63706A45ED32}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {07A92ABC-080E-4FCA-B7AE-19D1695D36E0}
+	EndGlobalSection
+EndGlobal

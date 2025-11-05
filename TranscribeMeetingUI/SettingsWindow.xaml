@@ -1,0 +1,386 @@
+﻿<Window x:Class="TranscribeMeetingUI.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Settings" Height="750" Width="900"
+        WindowStartupLocation="CenterOwner"
+        Background="#F5F5F5"
+        ResizeMode="NoResize">
+
+    <Window.Resources>
+        <!-- Modern Button Style -->
+        <Style x:Key="ModernButton" TargetType="Button">
+            <Setter Property="Background" Value="#2196F3"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding" Value="20,10"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="6"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#1976D2"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Secondary Button Style -->
+        <Style x:Key="SecondaryButton" TargetType="Button" BasedOn="{StaticResource ModernButton}">
+            <Setter Property="Background" Value="#757575"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#616161"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Browse Button Style -->
+        <Style x:Key="BrowseButton" TargetType="Button" BasedOn="{StaticResource ModernButton}">
+            <Setter Property="Background" Value="#616161"/>
+            <Setter Property="Padding" Value="15,8"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#424242"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Card Style -->
+        <Style x:Key="Card" TargetType="Border">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Padding" Value="20"/>
+            <Setter Property="Margin" Value="0,0,0,15"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect BlurRadius="10" ShadowDepth="2" Opacity="0.1" Color="#000000"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- TextBox Style -->
+        <Style x:Key="ModernTextBox" TargetType="TextBox">
+            <Setter Property="Padding" Value="10"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="BorderBrush" Value="#E0E0E0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Background" Value="White"/>
+            <Style.Triggers>
+                <Trigger Property="IsFocused" Value="True">
+                    <Setter Property="BorderBrush" Value="#2196F3"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- ComboBox Style -->
+        <Style x:Key="ModernComboBox" TargetType="ComboBox">
+            <Setter Property="Padding" Value="10"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="BorderBrush" Value="#E0E0E0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Background" Value="White"/>
+        </Style>
+
+        <!-- NumericUpDown Style (using TextBox) -->
+        <Style x:Key="NumericTextBox" TargetType="TextBox" BasedOn="{StaticResource ModernTextBox}">
+            <Setter Property="Width" Value="80"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <TextBlock Grid.Row="0" 
+                   Text="⚙️ Settings" 
+                   FontSize="28" 
+                   FontWeight="Bold" 
+                   Foreground="#212121"
+                   Margin="0,0,0,20"/>
+
+        <!-- Settings Content -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+
+                <!-- Transcription Provider Section -->
+                <Border Style="{StaticResource Card}">
+                    <StackPanel>
+                        <TextBlock Text="🎙️ Transcription Provider" 
+                                   FontSize="18" 
+                                   FontWeight="SemiBold" 
+                                   Foreground="#212121" 
+                                   Margin="0,0,0,15"/>
+
+                        <TextBlock Text="Select transcription engine:" 
+                                   FontSize="13" 
+                                   Foreground="#757575" 
+                                   Margin="0,0,0,8"/>
+                        <ComboBox x:Name="TranscriptionProviderCombo" 
+                                  Style="{StaticResource ModernComboBox}"
+                                  SelectionChanged="TranscriptionProviderCombo_SelectionChanged">
+                            <ComboBoxItem Content="Local (Whisper.cpp)" IsSelected="True"/>
+                            <ComboBoxItem Content="Azure Speech-to-Text"/>
+                        </ComboBox>
+
+                        <!-- Local Whisper Settings -->
+                        <StackPanel x:Name="LocalWhisperPanel" Margin="0,15,0,0">
+                            <TextBlock Text="Whisper CLI Path:" 
+                                       FontSize="13" 
+                                       Foreground="#424242" 
+                                       Margin="0,0,0,5"/>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBox x:Name="WhisperPathTextBox" 
+                                         Grid.Column="0"
+                                         Style="{StaticResource ModernTextBox}"
+                                         IsReadOnly="True"
+                                         Margin="0,0,10,0"/>
+                                <Button Grid.Column="1" 
+                                        Content="Browse..." 
+                                        Style="{StaticResource BrowseButton}"
+                                        Click="BrowseWhisperPath_Click"/>
+                            </Grid>
+
+                            <TextBlock Text="Whisper Model Path:" 
+                                       FontSize="13" 
+                                       Foreground="#424242" 
+                                       Margin="0,10,0,5"/>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBox x:Name="WhisperModelPathTextBox" 
+                                         Grid.Column="0"
+                                         Style="{StaticResource ModernTextBox}"
+                                         IsReadOnly="True"
+                                         Margin="0,0,10,0"/>
+                                <Button Grid.Column="1" 
+                                        Content="Browse..." 
+                                        Style="{StaticResource BrowseButton}"
+                                        Click="BrowseWhisperModel_Click"/>
+                            </Grid>
+                        </StackPanel>
+
+                        <!-- Azure STT Settings -->
+                        <StackPanel x:Name="AzureSTTPanel" Margin="0,15,0,0" Visibility="Collapsed">
+                            <TextBlock Text="Azure Speech API Key:" 
+                                       FontSize="13" 
+                                       Foreground="#424242" 
+                                       Margin="0,0,0,5"/>
+                            <TextBox x:Name="AzureSTTKeyTextBox" 
+                                     Style="{StaticResource ModernTextBox}"/>
+
+                            <TextBlock Text="Azure Region:" 
+                                       FontSize="13" 
+                                       Foreground="#424242" 
+                                       Margin="0,10,0,5"/>
+                            <TextBox x:Name="AzureRegionTextBox" 
+                                     Style="{StaticResource ModernTextBox}"
+                                     Text="eastus"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- AI Summary Provider Section -->
+                <Border Style="{StaticResource Card}">
+                    <StackPanel>
+                        <TextBlock Text="✨ AI Summary Provider" 
+                                   FontSize="18" 
+                                   FontWeight="SemiBold" 
+                                   Foreground="#212121" 
+                                   Margin="0,0,0,15"/>
+
+                        <TextBlock Text="Select AI provider:" 
+                                   FontSize="13" 
+                                   Foreground="#757575" 
+                                   Margin="0,0,0,8"/>
+                        <ComboBox x:Name="SummaryProviderCombo" 
+                                  Style="{StaticResource ModernComboBox}"
+                                  SelectionChanged="SummaryProviderCombo_SelectionChanged">
+                            <ComboBoxItem Content="Local (Ollama)" IsSelected="True"/>
+                            <ComboBoxItem Content="OpenRouter API"/>
+                        </ComboBox>
+
+                        <!-- Local Ollama Settings -->
+                        <StackPanel x:Name="LocalOllamaPanel" Margin="0,15,0,0">
+                            <TextBlock Text="Ollama Model Name:" 
+                                       FontSize="13" 
+                                       Foreground="#424242" 
+                                       Margin="0,0,0,5"/>
+                            <TextBox x:Name="OllamaModelTextBox" 
+                                     Style="{StaticResource ModernTextBox}"
+                                     Text="llama3.1:8b"/>
+
+                            <TextBlock Text="Ollama URL:" 
+                                       FontSize="13" 
+                                       Foreground="#424242" 
+                                       Margin="0,10,0,5"/>
+                            <TextBox x:Name="OllamaUrlTextBox" 
+                                     Style="{StaticResource ModernTextBox}"
+                                     Text="http://localhost:11434"/>
+                        </StackPanel>
+
+                        <!-- OpenRouter Settings -->
+                        <StackPanel x:Name="OpenRouterPanel" Margin="0,15,0,0" Visibility="Collapsed">
+                            <TextBlock Text="OpenRouter API Key:" 
+                                       FontSize="13" 
+                                       Foreground="#424242" 
+                                       Margin="0,0,0,5"/>
+                            <TextBox x:Name="OpenRouterKeyTextBox" 
+                                     Style="{StaticResource ModernTextBox}"/>
+
+                            <TextBlock Text="Model Name:" 
+                                       FontSize="13" 
+                                       Foreground="#424242" 
+                                       Margin="0,10,0,5"/>
+                            <TextBox x:Name="OpenRouterModelTextBox" 
+                                     Style="{StaticResource ModernTextBox}"
+                                     Text="anthropic/claude-3-sonnet"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- Translation Section -->
+                <Border Style="{StaticResource Card}">
+                    <StackPanel>
+                        <TextBlock Text="🌐 Translation (Optional)" 
+                                   FontSize="18" 
+                                   FontWeight="SemiBold" 
+                                   Foreground="#212121" 
+                                   Margin="0,0,0,15"/>
+
+                        <CheckBox x:Name="EnableTranslationCheckBox"
+                                  Content="Enable translation"
+                                  FontSize="13"
+                                  Foreground="#424242"
+                                  Margin="0,0,0,15"
+                                  Checked="EnableTranslation_Changed"
+                                  Unchecked="EnableTranslation_Changed"/>
+
+                        <StackPanel x:Name="TranslationPanel" Visibility="Collapsed">
+                            <TextBlock Text="DeepL API Key:" 
+                                       FontSize="13" 
+                                       Foreground="#424242" 
+                                       Margin="0,0,0,5"/>
+                            <TextBox x:Name="DeepLKeyTextBox" 
+                                     Style="{StaticResource ModernTextBox}"/>
+
+                            <TextBlock Text="Target Language:" 
+                                       FontSize="13" 
+                                       Foreground="#424242" 
+                                       Margin="0,10,0,5"/>
+                            <ComboBox x:Name="TargetLanguageCombo" 
+                                      Style="{StaticResource ModernComboBox}">
+                                <ComboBoxItem Content="English" Tag="EN-US" IsSelected="True"/>
+                                <ComboBoxItem Content="Spanish" Tag="ES"/>
+                                <ComboBoxItem Content="French" Tag="FR"/>
+                                <ComboBoxItem Content="German" Tag="DE"/>
+                                <ComboBoxItem Content="Italian" Tag="IT"/>
+                                <ComboBoxItem Content="Japanese" Tag="JA"/>
+                                <ComboBoxItem Content="Korean" Tag="KO"/>
+                                <ComboBoxItem Content="Chinese (Simplified)" Tag="ZH"/>
+                            </ComboBox>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- Real-time Settings Section -->
+                <Border Style="{StaticResource Card}">
+                    <StackPanel>
+                        <TextBlock Text="⚡ Real-time Mode" 
+                                   FontSize="18" 
+                                   FontWeight="SemiBold" 
+                                   Foreground="#212121" 
+                                   Margin="0,0,0,15"/>
+
+                        <TextBlock Text="Chunk interval (seconds):" 
+                                   FontSize="13" 
+                                   Foreground="#424242" 
+                                   Margin="0,0,0,8"/>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBox x:Name="RealTimeIntervalTextBox" 
+                                     Style="{StaticResource NumericTextBox}"
+                                     Text="30"
+                                     PreviewTextInput="NumericTextBox_PreviewTextInput"/>
+                            <TextBlock Text="seconds" 
+                                       FontSize="13" 
+                                       Foreground="#757575" 
+                                       VerticalAlignment="Center" 
+                                       Margin="10,0,0,0"/>
+                        </StackPanel>
+                        <TextBlock Text="Recommended: 15-60 seconds (lower = faster updates, higher CPU usage)" 
+                                   FontSize="11" 
+                                   Foreground="#9E9E9E" 
+                                   Margin="0,5,0,0"
+                                   TextWrapping="Wrap"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- General Settings Section -->
+                <Border Style="{StaticResource Card}">
+                    <StackPanel>
+                        <TextBlock Text="🔧 General" 
+                                   FontSize="18" 
+                                   FontWeight="SemiBold" 
+                                   Foreground="#212121" 
+                                   Margin="0,0,0,15"/>
+
+                        <CheckBox x:Name="EnableSummaryCheckBox"
+                                  Content="Enable AI summary generation"
+                                  FontSize="13"
+                                  Foreground="#424242"
+                                  IsChecked="True"
+                                  Margin="0,0,0,10"/>
+
+                        <CheckBox x:Name="AutoExportCheckBox"
+                                  Content="Auto-export after processing"
+                                  FontSize="13"
+                                  Foreground="#424242"/>
+                    </StackPanel>
+                </Border>
+
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Action Buttons -->
+        <Grid Grid.Row="2" Margin="0,20,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="10"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <Button Grid.Column="1" 
+                    Content="Save" 
+                    Style="{StaticResource ModernButton}"
+                    Width="120"
+                    Click="SaveButton_Click"/>
+            <Button Grid.Column="3" 
+                    Content="Cancel" 
+                    Style="{StaticResource SecondaryButton}"
+                    Width="120"
+                    Click="CancelButton_Click"/>
+        </Grid>
+    </Grid>
+</Window>

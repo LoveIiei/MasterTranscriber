@@ -1,0 +1,425 @@
+﻿<Window x:Class="TranscribeMeetingUI.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:markdig="clr-namespace:Markdig.Wpf;assembly=Markdig.Wpf"
+        mc:Ignorable="d"
+        Title="Master Transcriber" Height="700" Width="1000"
+        WindowStartupLocation="CenterScreen"
+        Background="#F5F5F5">
+
+    <Window.Resources>
+        <!-- Modern Button Style -->
+        <Style x:Key="ModernButton" TargetType="Button">
+            <Setter Property="Background" Value="#2196F3"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding" Value="20,12"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="6"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#1976D2"/>
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Background" Value="#BDBDBD"/>
+                    <Setter Property="Cursor" Value="Arrow"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Stop Button Style -->
+        <Style x:Key="StopButton" TargetType="Button" BasedOn="{StaticResource ModernButton}">
+            <Setter Property="Background" Value="#F44336"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#D32F2F"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Toggle Button Style -->
+        <Style x:Key="ToggleSwitch" TargetType="ToggleButton">
+            <Setter Property="Width" Value="50"/>
+            <Setter Property="Height" Value="26"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Grid>
+                            <Border x:Name="Track"
+                                    Background="#BDBDBD"
+                                    CornerRadius="13"
+                                    Width="50" Height="26"/>
+                            <Ellipse x:Name="Thumb"
+                                     Fill="White"
+                                     Width="20" Height="20"
+                                     HorizontalAlignment="Left"
+                                     Margin="3,3,0,3">
+                                <Ellipse.Effect>
+                                    <DropShadowEffect BlurRadius="4" ShadowDepth="1" Opacity="0.3"/>
+                                </Ellipse.Effect>
+                            </Ellipse>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="Track" Property="Background" Value="#4CAF50"/>
+                                <Setter TargetName="Thumb" Property="HorizontalAlignment" Value="Right"/>
+                                <Setter TargetName="Thumb" Property="Margin" Value="0,3,3,3"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Card Style -->
+        <Style x:Key="Card" TargetType="Border">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Padding" Value="20"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect BlurRadius="10" ShadowDepth="2" Opacity="0.1" Color="#000000"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" Style="{StaticResource Card}" Margin="0,0,0,20">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0">
+                    <TextBlock Text="🎙️ Master Transcriber" 
+                               FontSize="24" 
+                               FontWeight="Bold" 
+                               Foreground="#212121"/>
+                    <TextBlock Text="Real-Time Record, transcribe/translate, and summarize your meetings/lectures with AI" 
+                               FontSize="13" 
+                               Foreground="#757575" 
+                               Margin="0,5,0,0"/>
+                </StackPanel>
+
+                <!-- Recording Status Indicator -->
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                    <Ellipse x:Name="StatusIndicator" 
+                             Width="12" Height="12" 
+                             Fill="#BDBDBD" 
+                             Margin="0,0,8,0"/>
+                    <TextBlock x:Name="StatusText" 
+                               Text="Ready" 
+                               FontSize="14" 
+                               Foreground="#757575" 
+                               VerticalAlignment="Center"/>
+                    <Button x:Name="ImportFileButton"
+                       FontSize="16"
+                       Margin="20,0,0,0"
+                       Background="Transparent"
+                       BorderThickness="0"
+                       Cursor="Hand"
+                       Content="📂Import"
+                       Click="ImportFileButton_Click"></Button>
+                    <Button Content="⚙️" 
+                FontSize="18"
+                Width="40" Height="40"
+                Margin="15,0,0,0"
+                Background="Transparent"
+                BorderThickness="0"
+                Cursor="Hand"
+                Click="SettingsButton_Click"
+                ToolTip="Settings">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Background" Value="Transparent"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#F0F0F0"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Controls -->
+        <Border Grid.Row="1" Style="{StaticResource Card}" Margin="0,0,0,20">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Settings -->
+                <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                    <!-- Context Selector -->
+                    <TextBlock Text="📋 Context:" 
+                               FontSize="14" 
+                               Foreground="#424242" 
+                               VerticalAlignment="Center" 
+                               Margin="0,0,10,0"/>
+                    <ComboBox x:Name="ContextComboBox"
+                              Width="120"
+                              FontSize="13"
+                              Padding="10,5"
+                              BorderBrush="#E0E0E0"
+                              BorderThickness="1"
+                              Margin="0,0,30,0"
+                              SelectionChanged="ContextComboBox_SelectionChanged">
+                        <ComboBoxItem Content="Meeting" IsSelected="True" Tag="meeting"/>
+                        <ComboBoxItem Content="Lecture" Tag="lecture"/>
+                        <ComboBoxItem Content="Interview" Tag="interview"/>
+                        <ComboBoxItem Content="Podcast" Tag="podcast"/>
+                        <ComboBoxItem Content="Other" Tag="other"/>
+                    </ComboBox>
+                    <TextBlock Text="🎤 Microphone" 
+                               FontSize="14" 
+                               Foreground="#424242" 
+                               VerticalAlignment="Center" 
+                               Margin="0,0,15,0"/>
+                    <ToggleButton x:Name="MicToggle" 
+                                  Style="{StaticResource ToggleSwitch}" 
+                                  IsChecked="True"
+                                  Click="MicToggle_Click"/>
+                    <TextBlock x:Name="MicStatusText" 
+                               Text="Enabled" 
+                               FontSize="13" 
+                               Foreground="#4CAF50" 
+                               FontWeight="SemiBold"
+                               VerticalAlignment="Center" 
+                               Margin="10,0,40,0"/>
+
+                    <TextBlock Text="⚡ Real-time" 
+                               FontSize="14" 
+                               Foreground="#424242" 
+                               VerticalAlignment="Center" 
+                               Margin="0,0,15,0"/>
+                    <ToggleButton x:Name="RealTimeToggle" 
+                                  Style="{StaticResource ToggleSwitch}" 
+                                  IsChecked="False"
+                                  Click="RealTimeToggle_Click"/>
+                    <TextBlock x:Name="RealTimeStatusText" 
+                               Text="Disabled" 
+                               FontSize="13" 
+                               Foreground="#9E9E9E" 
+                               FontWeight="SemiBold"
+                               VerticalAlignment="Center" 
+                               Margin="10,0,0,0"/>
+                </StackPanel>
+
+                <!-- Record Button -->
+                <Button x:Name="RecordButton" 
+                        Grid.Column="2"
+                        Content="⚫ Start Recording" 
+                        Style="{StaticResource ModernButton}"
+                        Click="RecordButton_Click"/>
+            </Grid>
+        </Border>
+
+        <!-- Main Content Area -->
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="20"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Transcript Panel -->
+            <Border Grid.Column="0" Style="{StaticResource Card}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,15">
+                        <TextBlock Text="📝 Transcript" 
+                                   FontSize="18" 
+                                   FontWeight="SemiBold" 
+                                   Foreground="#212121"/>
+
+                        <!-- Translation Toggle Button -->
+                        <Button x:Name="TranslateButton"
+                                Content="🌐"
+                                Width="30" Height="30"
+                                Margin="10,0,0,0"
+                                Background="Transparent"
+                                BorderThickness="1"
+                                BorderBrush="#E0E0E0"
+                                Cursor="Hand"
+                                Click="TranslateButton_Click"
+                                ToolTip="Translate transcript"
+                                Visibility="Collapsed">
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Style.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Background" Value="#F0F0F0"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+
+                        <TextBlock x:Name="TranslationStatusText"
+                                   Text=""
+                                   FontSize="11"
+                                   Foreground="#9E9E9E"
+                                   VerticalAlignment="Center"
+                                   Margin="10,0,0,0"/>
+                    </StackPanel>
+
+                    <ScrollViewer Grid.Row="1" 
+                                  VerticalScrollBarVisibility="Auto"
+                                  HorizontalScrollBarVisibility="Disabled">
+                        <TextBlock x:Name="TranscriptText" 
+                                   Text="
+                                   
+                                   
+                                   Transcript will appear here after recording..." 
+                                   FontSize="14" 
+                                   Foreground="#757575" 
+                                   TextWrapping="Wrap"
+                                   LineHeight="22"/>
+                    </ScrollViewer>
+                </Grid>
+            </Border>
+
+
+            <!-- Summary Panel -->
+            <!-- Summary Panel -->
+            <Border Grid.Column="2" Style="{StaticResource Card}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,15">
+                        <TextBlock Text="✨ AI Summary" 
+                       FontSize="18" 
+                       FontWeight="SemiBold" 
+                       Foreground="#212121"/>
+
+                        <!-- Toggle between rendered and raw markdown -->
+                        <Button x:Name="ToggleMarkdownButton"
+                    Content="📝"
+                    Width="30" Height="30"
+                    Margin="10,0,0,0"
+                    Background="Transparent"
+                    BorderThickness="1"
+                    BorderBrush="#E0E0E0"
+                    Cursor="Hand"
+                    Click="ToggleMarkdown_Click"
+                    ToolTip="Toggle markdown view">
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Style.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Background" Value="#F0F0F0"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                    </StackPanel>
+
+                    <!-- Markdown Viewer (rendered) -->
+                    <ScrollViewer Grid.Row="1" 
+                      x:Name="SummaryMarkdownViewer"
+                      VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled"
+                      Visibility="Visible">
+                        <markdig:MarkdownViewer x:Name="SummaryMarkdown"
+                                    Markdown="AI-generated summary will appear here..."
+                                    Foreground="#757575"/>
+                    </ScrollViewer>
+
+                    <!-- Raw Text View (fallback) -->
+                    <ScrollViewer Grid.Row="1"
+                      x:Name="SummaryTextViewer"
+                      VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled"
+                      Visibility="Collapsed">
+                        <TextBlock x:Name="SummaryText" 
+                       Text="AI-generated summary will appear here..." 
+                       FontSize="14" 
+                       Foreground="#757575" 
+                       TextWrapping="Wrap"
+                       LineHeight="22"/>
+                    </ScrollViewer>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <!-- Progress/Status Bar -->
+        <Border Grid.Row="3" Style="{StaticResource Card}" Margin="0,20,0,0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock x:Name="ProgressText" 
+                               Text="Ready to record" 
+                               FontSize="13" 
+                               Foreground="#424242" 
+                               VerticalAlignment="Center"/>
+                    <ProgressBar x:Name="ProgressBar" 
+                                 Width="200" 
+                                 Height="6" 
+                                 Margin="15,0,0,0" 
+                                 Visibility="Collapsed"
+                                 IsIndeterminate="True"
+                                 Foreground="#2196F3"/>
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                    <TextBlock x:Name="RecordingDuration" 
+                               Text="00:00" 
+                               FontSize="16" 
+                               FontWeight="Bold" 
+                               Foreground="#F44336" 
+                               VerticalAlignment="Center"
+                               Visibility="Collapsed"/>
+                    <Button Content="💾 Export" 
+                            Style="{StaticResource ModernButton}" 
+                            Margin="15,0,0,0"
+                            Click="ExportButton_Click"
+                            x:Name="ExportButton"
+                            IsEnabled="False"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>
