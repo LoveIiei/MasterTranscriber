@@ -32,7 +32,12 @@ A powerful Windows desktop application for recording, transcribing, and summariz
 - (Optional) Ollama for local AI summarization
 
 ### Installation
+1. Go to [Release page](https://github.com/LoveIiei/TranscribeMeeting/releases) and download the newest version to your PC  
+2. Extract the contents out from the zip folder, and go into publish folder  
+2. Double-click TranscribeMeetingUI.exe to run the app
+4. Enjoy!
 
+*For Dev:*  
 1. **Clone the repository**
 ```bash
 git clone https://github.com/yourusername/meeting-transcriber.git
