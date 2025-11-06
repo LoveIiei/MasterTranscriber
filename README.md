@@ -66,6 +66,29 @@ dotnet run --project TranscribeMeetingUI
 3. Configure your preferred services:
    - **For Local Setup**: Provide paths to Whisper.cpp and Ollama
    - **For Cloud Setup**: Enter your API keys (Azure, OpenRouter, DeepL)
+#### 1. LLM (Ollama)
+The app uses [Ollama](https://ollama.com/) to run local Large Language Models.
+*   **Installation:** Download and install Ollama for your OS.
+*   **Download a Model:** Pull a model from the Ollama library. We recommend starting with `Llama 3.1 8B`.  
+    Run this command in your terminal:
+    ```bash
+    ollama pull llama3.1:8b
+    ```
+*   **Keep Ollama Running:** The Ollama background service is all that's needed. The app will automatically detect your downloaded models and show them in the settings panel dropdown.
+
+#### 2. Speech-to-Text (Whisper.cpp)
+The app connects to a [Whisper.cpp](https://github.com/ggerganov/whisper.cpp) for local transcription.
+*   **Installation:** Download the appropriate pre-built binary from the [Whisper.cpp releases page](https://github.com/ggerganov/whisper.cpp/releases).
+    *   For **NVIDIA GPU** users on Windows (recommended): Download `whisper-cublas-....zip`.
+    *   For **CPU-only** on Windows: Download `whisper-bin-x64.zip`.
+    *   For **MAC**: Clone the repo and build the APP
+*   **Download a Model:** Download a quantized Whisper model. `ggml-base.en-q8_0.bin` is a fast, high-quality starting point from [Huggingface](https://huggingface.co/ggerganov/whisper.cpp/tree/main)
+*   **Configuration:** You will provide the path to `whisper-cli.exe` and the `.bin` model file in the app's settings panel. The app will launch and manage the server for you.
+---
+✅ **Cloud Mode (Optional):**
+        **LLM:** [OpenRouter](https://openrouter.ai/) 
+        **STT:** [Microsoft Azure Speech](https://azure.microsoft.com/en-us/products/ai-services/speech-to-text).
+
 4. Click Save and start recording!
 
 ## 📖 Usage
